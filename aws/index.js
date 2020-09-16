@@ -20,6 +20,17 @@ const argv = yargs
     .help().alias('help', 'h')
     .argv;
 
+// get_regions_by_service
+
+let rawRegiondata = fs.readFileSync('./aws/service_regions.json');
+
+function get_service_regions(requested_service){
+    // Given a service name, return a list of region names where this service can have resources,restricted by a possible set of regions. 
+    if ['iam', 'cloudfront', 's3', 'route53'].includes(requested_service):
+        return []
+    return JSON.parse(rawRegiondata)[service];
+}
+
 if (argv.ls) {
     awsServices = Object.keys(aws_services).sort()
     awsServices.map(service => {
@@ -28,12 +39,15 @@ if (argv.ls) {
 } 
 else if(argv.lo){
 
-    ['us-east-1','us-east-2'].map( region => {
+    service_region = get_service_regions('ec2');
+    console.log(service_region)
+
+    service_region.map( region => {
         AWS.config.update({region});
         const ec2  = new AWS.EC2();
         ec2['describeInstances']({}, function(err, data) {
             if (err) {
-                console.log("Error", err.stack);
+                console.log(err.message);
             } else {
                 const fileName = `./export/${'ec2'}_${'describeInstances'}_${region}.json`;
                 const jsonData = JSON.stringify({"service": "ec2", region, "operation": "describeInstances",...data}, null, 2)
@@ -41,7 +55,6 @@ else if(argv.lo){
                     if (err) console.log(err);
                     console.log('Data written to file');
                 });
-                console.log('This is after the write call');
             }
         });
     })

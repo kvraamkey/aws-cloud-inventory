@@ -1,10 +1,14 @@
 {
-  "name": "aws-inventory",
+  "name": "aws-cloud-inventory",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
+  "bin": "./index.js",
   "dependencies": {
     "aws-sdk": "^2.752.0",
+    "chalk": "^4.1.0",
+    "clear": "^0.1.0",
+    "figlet": "^1.5.0",
     "yargs": "^16.0.3"
   },
   "devDependencies": {}
